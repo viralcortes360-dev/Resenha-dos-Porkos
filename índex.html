@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resenha dos Porkos - Canal do Palmeiras</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--verde:#00C853;--verde-escuro:#006437;--fundo:#0a0a0a;--card:#1a1a1a;--texto:#fff;--texto-sec:#888}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--fundo);color:var(--texto);line-height:1.6}
+        .painel{display:none;position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid var(--verde);padding:20px;z-index:1000;max-height:90vh;overflow-y:auto}
+        .painel.ativo{display:block}
+        .btn-edit{position:fixed;bottom:20px;right:20px;background:var(--verde);color:#000;border:none;padding:12px 20px;border-radius:25px;font-weight:700;cursor:pointer;z-index:999;box-shadow:0 4px 12px rgba(0,200,83,0.3)}
+        .painel h3{color:var(--verde);margin:15px 0 10px}
+        .form-group{margin-bottom:12px}
+        .form-group label{display:block;color:var(--verde);font-size:12px;margin-bottom:4px}
+        .form-group input,.form-group textarea{width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;font-family:inherit}
+        .form-group textarea{min-height:60px;resize:vertical}
+        .btn-salvar{background:var(--verde);color:#000;border:none;padding:12px 24px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+        .fechar{position:absolute;top:15px;right:15px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer}
+        .login-painel{background:var(--card);padding:30px;border-radius:16px;max-width:400px;margin:50px auto;text-align:center;border:2px solid var(--verde)}
+        .login-painel h3{color:var(--verde);margin-bottom:20px;font-size:1.5em}
+        .login-painel p{color:var(--texto-sec);margin-bottom:20px;font-size:0.9em}
+        .login-painel input{width:100%;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;margin-bottom:15px;text-align:center;font-size:1.1em}
+        .login-painel input::placeholder{color:var(--texto-sec)}
+        .btn-login{background:var(--verde);color:#000;border:none;padding:15px 30px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;font-size:1.1em}
+        .erro-senha{color:#ff4444;margin-top:10px;display:none}
+        header{background:linear-gradient(180deg,rgba(0,100,55,0.3) 0%,rgba(0,0,0,0) 100%);padding:20px;text-align:center}
+        .logo{width:120px;height:120px;margin:0 auto 20px;background:linear-gradient(135deg,var(--verde) 0%,var(--verde-escuro) 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,200,83,0.3);font-size:60px}
+        h1{font-size:2.5em;font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:10px}
+        h1 span{color:var(--verde);display:block}
+        .subtitulo{color:var(--texto-sec);font-size:1.1em;margin-bottom:20px}
+        .descricao{max-width:600px;margin:0 auto 30px;color:var(--texto-sec);line-height:1.8;padding:0 20px}
+        .botoes{max-width:400px;margin:0 auto;display:flex;flex-direction:column;gap:15px;padding:0 20px}
+        .btn-youtube{background:var(--verde);color:#000;padding:18px;border-radius:12px;text-decoration:none;font-weight:700;font-size:1.1em;display:flex;align-items:center;justify-content:center;gap:10px}
+        .btn-conteudo{background:transparent;color:var(--verde);padding:18px;border-radius:12px;text-decoration:none;font-weight:700;font-size:1.1em;display:flex;align-items:center;justify-content:center;gap:10px;border:2px solid var(--verde)}
+        .destaque-dia{background:linear-gradient(135deg,rgba(0,200,83,0.2) 0%,rgba(0,100,55,0.1) 100%);border:2px solid var(--verde);border-radius:20px;padding:25px;margin:20px;max-width:800px;margin-left:auto;margin-right:auto}
+        .destaque-dia h2{color:var(--verde);font-size:1.5em;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+        .destaque-dia h2::before{content:"🔥"}
+        .destaque-dia p{margin-bottom:10px;line-height:1.8}
+        .destaque-dia strong{color:var(--verde)}
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:40px 20px;max-width:600px;margin:0 auto;text-align:center}
+        .stats h3{color:var(--verde);font-size:2.5em;font-weight:900}
+        .stats p{color:var(--texto-sec);font-size:0.9em;text-transform:uppercase;letter-spacing:1px}
+        section{padding:60px 20px}
+        .sec-header{text-align:center;margin-bottom:40px}
+        .sec-tag{color:var(--verde);text-transform:uppercase;letter-spacing:2px;font-size:0.9em;font-weight:700;margin-bottom:15px}
+        .sec-titulo{font-size:2.2em;font-weight:900;text-transform:uppercase;margin-bottom:15px}
+        .sec-titulo span{color:var(--verde)}
+        .sec-desc{color:var(--texto-sec);max-width:600px;margin:0 auto}
+        .noticias{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+        .noticia{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)}
+        .noticia-img{height:200px;background:linear-gradient(135deg,#1a1a2e 0%,#0f0f0f 100%);display:flex;align-items:center;justify-content:center;font-size:3em;position:relative}
+        .noticia-tag{position:absolute;top:15px;left:15px;background:var(--verde);color:#000;padding:6px 16px;border-radius:20px;font-size:0.8em;font-weight:700;text-transform:uppercase}
+        .noticia-content{padding:25px}
+        .noticia-meta{display:flex;gap:20px;color:var(--texto-sec);font-size:0.9em;margin-bottom:15px}
+        .noticia-titulo{font-size:1.3em;font-weight:700;margin-bottom:10px;line-height:1.4}
+        .noticia-resumo{color:var(--texto-sec);line-height:1.6}
+        .noticia-completa{color:var(--texto-sec);line-height:1.8;margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.1)}
+        .btn-todas{display:inline-flex;align-items:center;gap:10px;color:var(--verde);text-decoration:none;font-weight:600;margin-top:30px;padding:12px 24px;border:2px solid var(--verde);border-radius:30px}
+        .jogos{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+        .jogo{background:var(--card);border-radius:16px;padding:25px;border:1px solid rgba(255,255,255,0.1);position:relative}
+        .jogo-tag{position:absolute;top:0;left:0;background:var(--verde);color:#000;padding:8px 20px;border-radius:0 0 16px 0;font-size:0.8em;font-weight:700;text-transform:uppercase}
+        .jogo-times{display:flex;align-items:center;justify-content:space-between;margin:25px 0;flex-wrap:wrap;gap:15px}
+        .time{display:flex;align-items:center;gap:15px;font-weight:700;font-size:1.1em}
+        .escudo{width:50px;height:50px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000}
+        .escudo.adv{background:#333;color:#fff}
+        .vs{color:var(--verde);font-weight:900;font-size:1.3em}
+        .jogo-info{display:flex;justify-content:center;gap:30px;color:var(--texto-sec);font-size:0.9em;flex-wrap:wrap}
+        .escalacao{margin-top:20px;padding:20px;background:rgba(0,200,83,0.05);border-radius:12px;border:1px solid rgba(0,200,83,0.2)}
+        .escalacao h4{color:var(--verde);margin-bottom:10px;font-size:0.9em;text-transform:uppercase}
+        .escalacao p{color:var(--texto-sec);font-size:0.9em;line-height:1.6}
+        .videos{background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,100,55,0.1) 100%)}
+        .videos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px;max-width:1200px;margin:0 auto}
+        .video-card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)}
+        .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000}
+        .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+        .sobre{background:var(--card);margin:40px 20px;border-radius:24px;padding:40px;max-width:800px;margin-left:auto;margin-right:auto}
+        .sobre-header{display:flex;align-items:center;gap:15px;margin-bottom:30px}
+        .sobre-icon{width:60px;height:60px;background:rgba(0,200,83,0.1);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5em;color:var(--verde)}
+        .info-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:30px}
+        .info-card{background:rgba(255,255,255,0.05);padding:25px;border-radius:16px;border:1px solid rgba(255,255,255,0.1)}
+        .info-card h4{color:var(--verde);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;font-size:0.9em}
+        .programacao{margin-top:30px;padding:20px;background:rgba(0,200,83,0.1);border-radius:12px;border:1px solid rgba(0,200,83,0.3)}
+        .programacao h4{color:var(--verde);margin-bottom:10px}
+        .newsletter{text-align:center;padding:80px 20px;background:linear-gradient(180deg,rgba(0,100,55,0.2) 0%,rgba(0,0,0,0) 100%)}
+        .newsletter-icon{width:80px;height:80px;background:rgba(0,200,83,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 30px;font-size:2em;color:var(--verde)}
+        .newsletter-form{max-width:500px;margin:30px auto 0;display:flex;flex-direction:column;gap:15px}
+        .newsletter-form input{padding:18px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:1em}
+        .newsletter-form input::placeholder{color:var(--texto-sec)}
+        .btn-inscrever{background:var(--verde);color:#000;border:none;padding:18px;border-radius:12px;font-weight:700;font-size:1.1em;cursor:pointer}
+        footer{text-align:center;padding:40px 20px;color:var(--texto-sec);border-top:1px solid rgba(255,255,255,0.1)}
+        .footer-logo{width:60px;height:60px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-weight:900;color:#000;font-size:1.5em}
+        @media(max-width:768px){
+            h1{font-size:2em}
+            .sec-titulo{font-size:1.8em}
+            .stats{grid-template-columns:1fr;gap:30px}
+            .jogo-times{flex-direction:column;text-align:center}
+            .time{flex-direction:column}
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-edit" onclick="abrirLogin()">✏️ Editar Site</button>
+
+<div class="painel" id="loginPainel">
+    <div class="login-painel">
+        <h3>🔐 Área Restrita</h3>
+        <p>Digite a senha para acessar o painel de edição:</p>
+        <input type="password" id="senhaInput" placeholder="Digite a senha..." onkeypress="if(event.key==='Enter')verificarSenha()">
+        <button class="btn-login" onclick="verificarSenha()">Entrar</button>
+        <p class="erro-senha" id="erroSenha">❌ Senha incorreta! Tente novamente.</p>
+    </div>
+</div>
+
+<div class="painel" id="painelEdicao">
+    <button class="fechar" onclick="fecharPainel()">×</button>
+    <h3>📊 Estatísticas</h3>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <div class="form-group"><label>Inscritos</label><input type="text" id="eInscritos" value="1000+"></div>
+        <div class="form-group"><label>Vídeos</label><input type="text" id="eVideos" value="150+"></div>
+        <div class="form-group"><label>Anos</label><input type="text" id="eAnos" value="1+"></div>
+    </div>
+    
+    <h3>📰 Notícia Destaque 1</h3>
+    <div class="form-group"><label>Tag</label><input type="text" id="eTag1" value="Quartas de Final"></div>
+    <div class="form-group"><label>Título</label><input type="text" id="eTitulo1" value="Mauricio destaca entrosamento e faz alerta para jogo contra o Capivariano"></div>
+    <div class="form-group"><label>Resumo</label><textarea id="eResumo1">Meia paraguaio explica como ajuda de Gómez e trabalho no Palmeiras podem levá-lo à Copa do Mundo.</textarea></div>
+    
+    <h3>📰 Notícia Destaque 2</h3>
+    <div class="form-group"><label>Tag</label><input type="text" id="eTag2" value="Estréia"></div>
+    <div class="form-group"><label>Título</label><input type="text" id="eTitulo2" value="Jhon Arias pode fazer estreia contra o Capivariano"></div>
+    <div class="form-group"><label>Resumo</label><textarea id="eResumo2">Colombiano deve começar no banco de reservas devido às poucas sessões de treinamento com o elenco.</textarea></div>
+    
+    <h3>⚽ Próximo Jogo</h3>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px">
+        <div class="form-group"><label>Campeonato</label><input type="text" id="eCamp" value="Paulistão - Quartas"></div>
+        <div class="form-group"><label>Adversário</label><input type="text" id="eAdv" value="Capivariano"></div>
+        <div class="form-group"><label>Data</label><input type="text" id="eData" value="21 Fev"></div>
+        <div class="form-group"><label>Horário</label><input type="text" id="eHora" value="21h30"></div>
+    </div>
+    
+    <button class="btn-salvar" onclick="salvar()">💾 Salvar Alterações</button>
+</div>
+
+<header>
+    <div class="logo">🐷</div>
+    <h1>RESENHA<span>DOS PORKOS</span></h1>
+    <p class="subtitulo">A voz da torcida que não se cala</p>
+    <p class="descricao">Análises, notícias e a resenha mais sincera sobre o Palmeiras. Direto do coração da Academia de Futebol para você.</p>
+    <div class="botoes">
+        <a href="https://youtube.com/@resenhadosporkos" class="btn-youtube">▶️ ASSISTIR NO YOUTUBE</a>
+        <a href="#conteudo" class="btn-conteudo">▶ VER CONTEÚDO</a>
+    </div>
+</header>
+
+<div class="destaque-dia">
+    <h2>Destaque do Dia - 19/02/2026</h2>
+    <p><strong>🎯 Semana Estratégica:</strong> Palmeiras planeia semana de treinamentos intensivos para preparação das quartas de final do Paulistão contra o Capivariano.</p>
+    <p><strong>⚽ Escalação Definida:</strong> Abel Ferreira deve manter a base que vem jogando, com possível estreia de Jhon Arias no segundo tempo.</p>
+    <p><strong>🏥 Departamento Médico:</strong> Felipe Anderson recuperado e reestreou contra o Guarani. Apenas Paulinho segue em transição física.</p>
+</div>
+
+<section class="stats">
+    <div><h3 id="sInscritos">1000+</h3><p>Inscritos</p></div>
+    <div><h3 id="sVideos">150+</h3><p>Vídeos</p></div>
+    <div><h3 id="sAnos">1+</h3><p>Anos</p></div>
+</section>
+
+<section id="conteudo">
+    <div class="sec-header">
+        <div class="sec-tag">📈 NOTÍCIAS EM DESTAQUE</div>
+        <h2 class="sec-titulo">ÚLTIMAS <span>NOTÍCIAS</span></h2>
+        <p class="sec-desc">Fique por dentro de tudo que acontece no Verdão. Notícias atualizadas 24/7.</p>
+    </div>
+    
+    <div class="noticias">
+        <article class="noticia">
+            <div class="noticia-img">⚽<span class="noticia-tag" id="tag1">Quartas de Final</span></div>
+            <div class="noticia-content">
+                <div class="noticia-meta">📅 19 Fev 2026 ⏱️ 6 min</div>
+                <h3 class="noticia-titulo" id="titulo1">Mauricio destaca entrosamento e faz alerta para jogo contra o Capivariano: "Muito cuidado"</h3>
+                <p class="noticia-resumo" id="resumo1">Meia paraguaio explica como ajuda de Gómez e trabalho no Palmeiras podem levá-lo à Copa do Mundo.</p>
+                <div class="noticia-completa">
+                    <p>O meia Mauricio, uma das revelações do Palmeiras na temporada, destacou o entrosamento do elenco alviverde e fez um alerta importante para o confronto contra o Capivariano pelas quartas de final do Paulistão.</p>
+                    <p style="margin-top:10px">"Temos que ter muito cuidado. É um mata-mata e não tem jogo fácil. O Capivariano vai vir com tudo e precisamos estar concentrados", afirmou o jogador.</p>
+                    <p style="margin-top:10px">Mauricio também falou sobre a influência de Gustavo Gómez em sua convocação para a seleção paraguaia: "O Gómez me ajuda muito, não só dentro de campo, mas na adaptação. Quero fazer uma boa temporada para ir à Copa".</p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="noticia">
+            <div class="noticia-img">✍️<span class="noticia-tag" id="tag2">Estréia</span></div>
+            <div class="noticia-content">
+                <div class="noticia-meta">📅 18 Fev 2026 ⏱️ 4 min</div>
+                <h3 class="noticia-titulo" id="titulo2">Jhon Arias pode fazer estreia contra o Capivariano, mas deve começar no banco</h3>
+                <p class="noticia-resumo" id="resumo2">Colombiano ex-Wolverhampton chegou para reforçar o elenco, mas ainda precisa de mais treinos com o grupo.</p>
+                <div class="noticia-completa">
+                    <p>A espera pela estreia de Jhon Arias pode acabar no sábado. O colombiano, contratado junto ao Wolverhampton, já está regularizado e à disposição de Abel Ferreira.</p>
+                    <p style="margin-top:10px">No entanto, devido às poucas sessões de treinamento com o restante do elenco, o camisa 11 <strong>tende a ser acionado com o confronto em andamento</strong>, saindo do banco de reservas.</p>
+                    <p style="margin-top:10px">A torcida palmeirense aguarda ansiosamente para ver o novo reforço em campo, que chegou com status de titular mas precisa de ritmo de jogo.</p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="noticia">
+            <div class="noticia-img">🏥<span class="noticia-tag">Departamento Médico</span></div>
+            <div class="noticia-content">
+                <div class="noticia-meta">📅 19 Fev 2026 ⏱️ 3 min</div>
+                <h3 class="noticia-titulo">Palmeiras praticamente zera departamento médico para quartas de final</h3>
+                <p class="noticia-resumo">Felipe Anderson retorna após lesão no tornozelo. Apenas Paulinho segue em transição física.</p>
+                <div class="noticia-completa">
+                    <p>O Verdão conseguiu praticamente zerar o departamento médico nos últimos dias. <strong>Felipe Anderson</strong> se recuperou de uma entorse no tornozelo esquerdo e reestreou no duelo contra o Guarani.</p>
+                    <p style="margin-top:10px">Neste momento, apenas o camisa 10, <strong>Paulinho</strong>, segue realizando atividades de transição física e deve ficar de fora do jogo de sábado.</p>
+                    <p style="margin-top:10px"><strong>Lucas Evangelista</strong> e <strong>Figueiredo</strong> também retornaram aos treinos normais, ampliando as opções de Abel Ferreira para o mata-mata.</p>
+                </div>
+            </div>
+        </article>
+        
+        <article class="noticia">
+            <div class="noticia-img">📊<span class="noticia-tag">Estatísticas</span></div>
+            <div class="noticia-content">
+                <div class="noticia-meta">📅 15 Fev 2026 ⏱️ 5 min</div>
+                <h3 class="noticia-titulo">Carlos Miguel bate recorde histórico entre goleiros do Palmeiras no século</h3>
+                <p class="noticia-resumo">Goleiro ostenta melhor índice de jogos sem levar gol (55%) entre todos os 18 arqueiros que atuaram pelo clube neste século.</p>
+                <div class="noticia-completa">
+                    <p><strong>Carlos Miguel</strong> saiu de campo sem levar gol em 11 dos 20 jogos que já disputou pelo Palmeiras. Com <strong>55% de partidas com baliza a zero</strong>, ostenta o melhor índice entre todos os 18 goleiros que atuaram neste século.</p>
+                    <p style="margin-top:10px">Em média de gols sofridos, aparece na vice-liderança: 0,75 (15 gols em 20 jogos), só atrás de Weverton (0,73).</p>
+                    <p style="margin-top:10px">O goleiro tornou-se o dono absoluto da meta alviverde em 2025, transmitindo muita segurança sob as traves.</p>
+                </div>
+            </div>
+        </article>
+    </div>
+    
+    <div style="text-align:center"><a href="https://www.palmeiras.com.br/calendario" target="_blank" class="btn-todas">Ver todas as notícias →</a></div>
+</section>
+
+<section style="background:linear-gradient(180deg,rgba(0,0,0,0)0%,rgba(0,100,55,0.1)100%)">
+    <div class="sec-header">
+        <div class="sec-tag">🗓️ CALENDÁRIO</div>
+        <h2 class="sec-titulo">PRÓXIMOS <span>JOGOS</span></h2>
+    </div>
+    
+    <div class="jogos">
+        <div class="jogo" style="border:2px solid var(--verde);box-shadow:0 0 20px rgba(0,200,83,0.2)">
+            <span class="jogo-tag" id="camp">Paulistão - Quartas</span>
+            <div class="jogo-times">
+                <div class="time"><div class="escudo">P</div>PALMEIRAS</div>
+                <span class="vs">VS</span>
+                <div class="time"><span id="adv">CAPIVARIANO</span><div class="escudo adv">C</div></div>
+            </div>
+            <div class="jogo-info">📅 <span id="data">21 Fev</span> ⏰ <span id="hora">21h30</span> 📍 Allianz Parque</div>
+            
+            <div class="escalacao">
+                <h4>📋 Provável Escalação</h4>
+                <p><strong>Carlos Miguel;</strong> Khellven, Gustavo Gómez, Murilo, Piquerez; Marlon Freitas, Andreas Pereira; Mauricio, Allan; Flaco López, Vitor Roque. <em>Técnico: Abel Ferreira</em></p>
+                <p style="margin-top:8px"><strong>Desfalques:</strong> Paulinho (transição física)</p>
+                <p style="margin-top:8px"><strong>Estreia:</strong> Jhon Arias deve começar no banco</p>
+            </div>
+        </div>
+        
+        <div class="jogo">
+            <span class="jogo-tag">Brasileirão</span>
+            <div class="jogo-times">
+                <div class="time"><div class="escudo">P</div>PALMEIRAS</div>
+                <span class="vs">VS</span>
+                <div class="time">FLUMINENSE<div class="escudo adv">F</div></div>
+            </div>
+            <div class="jogo-info">📅 25 Fev ⏰ 21h30 📍 Allianz Parque</div>
+        </div>
+        
+        <div class="jogo">
+            <span class="jogo-tag">Brasileirão</span>
+            <div class="jogo-times">
+                <div class="time"><div class="escudo">P</div>PALMEIRAS</div>
+                <span class="vs">VS</span>
+                <div class="time">MIRASSOL<div class="escudo adv">M</div></div>
+            </div>
+            <div class="jogo-info">📅 15 Mar ⏰ 18h30 📍 Allianz Parque</div>
+        </div>
+    </div>
+    
+    <div style="text-align:center;margin-top:30px"><a href="https://www.palmeiras.com.br/calendario" target="_blank" class="btn-todas">Ver calendário completo →</a></div>
+</section>
+
+<section class="videos">
+    <div class="sec-header">
+        <div class="sec-tag">▶️ CANAL NO YOUTUBE</div>
+        <h2 class="sec-titulo">VÍDEOS <span>RECENTES</span></h2>
+        <p class="sec-desc">Confira os últimos conteúdos do canal. Análises, resenhas e muito mais!</p>
+    </div>
+    
+    <div class="videos-grid">
+        <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/QD8suPy_l5Q" allowfullscreen></iframe></div></div>
+        <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/miXFCqPYWXk" allowfullscreen></iframe></div></div>
+        <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/GKJmp-Kdsvs" allowfullscreen></iframe></div></div>
+        <div class="video-card"><div class="video-container"><iframe src="https://www.youtube.com/embed/uViEqbeJB4c" allowfullscreen></iframe></div></div>
+    </div>
+</section>
+
+<section class="sobre">
+    <div class="sobre-header">
+        <div class="sobre-icon">❝</div>
+        <div>
+            <div style="color:var(--verde);font-weight:700;letter-spacing:2px;font-size:0.9em">NOSSA HISTÓRIA</div>
+            <h2 style="font-size:2em;font-weight:900">QUEM <span style="color:var(--verde)">SOMOS</span></h2>
+        </div>
+    </div>
+    
+    <p style="font-size:1.1em;line-height:1.8;color:var(--texto-sec);margin-bottom:20px">A <strong style="color:var(--verde)">Resenha dos Porkos</strong> nasceu da paixão irreverente pela Sociedade Esportiva Palmeiras. Somos torcedores que transformaram a raiva, a alegria e a loucura do futebol em conteúdo.</p>
+    
+    <p style="font-size:1.1em;line-height:1.8;color:var(--texto-sec)">Sem filtros, sem frescura, só a verdade do Verdão. Nosso objetivo é trazer análises honestas, notícias atualizadas e aquela resenha de bar que todo palmeirense ama.</p>
+    
+    <div class="info-cards">
+        <div class="info-card"><h4>🎯 Missão</h4><p>Levar a voz da torcida palmeirense para todo o Brasil com conteúdo autêntico e apaixonado.</p></div>
+        <div class="info-card"><h4>👁️ Visão</h4><p>Ser o maior canal de resenha sobre o Palmeiras do YouTube brasileiro.</p></div>
+        <div class="info-card"><h4>💚 Valores</h4><p>Paixão, honestidade, irreverência e amor incondicional ao Verdão.</p></div>
+    </div>
+    
+    <div class="programacao">
+        <h4>📅 Programação do Canal</h4>
+        <p><strong>🔴 Lives:</strong> Segundas, Terças, Quintas e Domingos</p>
+        <p style="margin-top:8px"><strong>📚 Na Sua Estante com Vendetta:</strong> Quartas-feiras</p>
+        <p style="margin-top:8px;color:var(--verde)"><strong>🎙️ Próxima live:</strong> Pré-jogo Palmeiras x Capivariano - Sábado, 21/02 às 19h30</p>
+    </div>
+</section>
+
+<section class="newsletter">
+    <div class="newsletter-icon">✉️</div>
+    <h2 class="sec-titulo">NÃO PERCA <span>NENHUMA</span> RESENHA</h2>
+    <p class="sec-desc">Inscreva-se na nossa newsletter e receba as últimas notícias do Palmeiras e avisos de novos vídeos direto no seu e-mail.</p>
+    
+    <form class="newsletter-form" onsubmit="event.preventDefault();alert('Inscrição realizada!')">
+        <input type="email" placeholder="Seu melhor e-mail" required>
+        <button type="submit" class="btn-inscrever">✈️ INSCREVER</button>
+    </form>
+    
+    <p style="margin-top:20px;font-size:0.9em;color:var(--texto-sec)">Prometemos não enviar spam. Só notícias do Verdão! 💚</p>
+</section>
+
+<footer>
+    <div class="footer-logo">P</div>
+    <p style="font-size:1.2em;font-weight:700;margin-bottom:10px">AVANTI PALESTRA!</p>
+    <p>© 2026 Resenha dos Porkos - Todos os direitos reservados</p>
+    <p style="margin-top:10px;font-size:0.9em">Canal criado em 2025 • Mais de 150 vídeos</p>
+    <p style="margin-top:5px;font-size:0.8em;color:var(--verde)">Última atualização: 19/02/2026</p>
+</footer>
+
+<script>
+const SENHA_CORRETA = "porkos2025";
+
+function abrirLogin(){
+    document.getElementById('loginPainel').classList.add('ativo');
+    document.getElementById('painelEdicao').classList.remove('ativo');
+}
+
+function verificarSenha(){
+    const senha = document.getElementById('senhaInput').value;
+    if(senha === SENHA_CORRETA){
+        document.getElementById('loginPainel').classList.remove('ativo');
+        document.getElementById('painelEdicao').classList.add('ativo');
+        document.getElementById('erroSenha').style.display = 'none';
+        document.getElementById('senhaInput').value = '';
+    } else {
+        document.getElementById('erroSenha').style.display = 'block';
+        document.getElementById('senhaInput').value = '';
+    }
+}
+
+function fecharPainel(){
+    document.getElementById('painelEdicao').classList.remove('ativo');
+    document.getElementById('loginPainel').classList.remove('ativo');
+}
+
+function salvar(){
+    document.getElementById('sInscritos').textContent=document.getElementById('eInscritos').value;
+    document.getElementById('sVideos').textContent=document.getElementById('eVideos').value;
+    document.getElementById('sAnos').textContent=document.getElementById('eAnos').value;
+    document.getElementById('tag1').textContent=document.getElementById('eTag1').value;
+    document.getElementById('titulo1').textContent=document.getElementById('eTitulo1').value;
+    document.getElementById('resumo1').textContent=document.getElementById('eResumo1').value;
+    document.getElementById('tag2').textContent=document.getElementById('eTag2').value;
+    document.getElementById('titulo2').textContent=document.getElementById('eTitulo2').value;
+    document.getElementById('resumo2').textContent=document.getElementById('eResumo2').value;
+    document.getElementById('camp').textContent=document.getElementById('eCamp').value;
+    document.getElementById('adv').textContent=document.getElementById('eAdv').value;
+    document.getElementById('data').textContent=document.getElementById('eData').value;
+    document.getElementById('hora').textContent=document.getElementById('eHora').value;
+    alert('✅ Alterações salvas com sucesso!');fecharPainel()
+}
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',function(e){e.preventDefault();document.querySelector(this.getAttribute('href'))?.scrollIntoView({behavior:'smooth'})}))
+</script>
+
+</body>
+</html>

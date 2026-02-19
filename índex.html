@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resenha dos Porkos - Canal do Palmeiras</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--verde:#00C853;--verde-escuro:#006437;--fundo:#0a0a0a;--card:#1a1a1a;--texto:#fff;--texto-sec:#888}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--fundo);color:var(--texto);line-height:1.6}
+        .painel{display:none;position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-bottom:2px solid var(--verde);padding:20px;z-index:1000;max-height:90vh;overflow-y:auto}
+        .painel.ativo{display:block}
+        .btn-edit{position:fixed;bottom:20px;right:20px;background:var(--verde);color:#000;border:none;padding:12px 20px;border-radius:25px;font-weight:700;cursor:pointer;z-index:999;box-shadow:0 4px 12px rgba(0,200,83,0.3)}
+        .painel h3{color:var(--verde);margin:15px 0 10px}
+        .form-group{margin-bottom:12px}
+        .form-group label{display:block;color:var(--verde);font-size:12px;margin-bottom:4px}
+        .form-group input,.form-group textarea{width:100%;padding:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;font-family:inherit}
+        .form-group textarea{min-height:60px;resize:vertical}
+        .btn-salvar{background:var(--verde);color:#000;border:none;padding:12px 24px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+        .fechar{position:absolute;top:15px;right:15px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer}
+        .login-painel{background:var(--card);padding:30px;border-radius:16px;max-width:400px;margin:50px auto;text-align:center;border:2px solid var(--verde)}
+        .login-painel h3{color:var(--verde);margin-bottom:20px;font-size:1.5em}
+        .login-painel p{color:var(--texto-sec);margin-bottom:20px;font-size:0.9em}
+        .login-painel input{width:100%;padding:15px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:#fff;margin-bottom:15px;text-align:center;font-size:1.1em}
+        .login-painel input::placeholder{color:var(--texto-sec)}
+        .btn-login{background:var(--verde);color:#000;border:none;padding:15px 30px;border-radius:8px;font-weight:700;cursor:pointer;width:100%;font-size:1.1em}
+        .erro-senha{color:#ff4444;margin-top:10px;display:none}
+        header{background:linear-gradient(180deg,rgba(0,100,55,0.3) 0%,rgba(0,0,0,0) 100%);padding:20px;text-align:center}
+        .logo{width:120px;height:120px;margin:0 auto 20px;background:linear-gradient(135deg,var(--verde) 0%,var(--verde-escuro) 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(0,200,83,0.3);font-size:60px}
+        h1{font-size:2.5em;font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:10px}
+        h1 span{color:var(--verde);display:block}
+        .subtitulo{color:var(--texto-sec);font-size:1.1em;margin-bottom:20px}
+        .descricao{max-width:600px;margin:0 auto 30px;color:var(--texto-sec);line-height:1.8;padding:0 20px}
+        .botoes{max-width:400px;margin:0 auto;display:flex;flex-direction:column;gap:15px;padding:0 20px}
+        .btn-youtube{background:var(--verde);color:#000;padding:18px;border-radius:12px;text-decoration:none;font-weight:700;font-size:1.1em;display:flex;align-items:center;justify-content:center;gap:10px}
+        .btn-conteudo{background:transparent;color:var(--verde);padding:18px;border-radius:12px;text-decoration:none;font-weight:700;font-size:1.1em;display:flex;align-items:center;justify-content:center;gap:10px;border:2px solid var(--verde)}
+        .destaque-dia{background:linear-gradient(135deg,rgba(0,200,83,0.2) 0%,rgba(0,100,55,0.1) 100%);border:2px solid var(--verde);border-radius:20px;padding:25px;margin:20px;max-width:800px;margin-left:auto;margin-right:auto}
+        .destaque-dia h2{color:var(--verde);font-size:1.5em;margin-bottom:15px;display:flex;align-items:center;gap:10px}
+        .destaque-dia h2::before{content:"🔥"}
+        .destaque-dia p{margin-bottom:10px;line-height:1.8}
+        .destaque-dia strong{color:var(--verde)}
+        .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:40px 20px;max-width:600px;margin:0 auto;text-align:center}
+        .stats h3{color:var(--verde);font-size:2.5em;font-weight:900}
+        .stats p{color:var(--texto-sec);font-size:0.9em;text-transform:uppercase;letter-spacing:1px}
+        section{padding:60px 20px}
+        .sec-header{text-align:center;margin-bottom:40px}
+        .sec-tag{color:var(--verde);text-transform:uppercase;letter-spacing:2px;font-size:0.9em;font-weight:700;margin-bottom:15px}
+        .sec-titulo{font-size:2.2em;font-weight:900;text-transform:uppercase;margin-bottom:15px}
+        .sec-titulo span{color:var(--verde)}
+        .sec-desc{color:var(--texto-sec);max-width:600px;margin:0 auto}
+        .noticias{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+        .noticia{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)}
+        .noticia-img{height:200px;background:linear-gradient(135deg,#1a1a2e 0%,#0f0f0f 100%);display:flex;align-items:center;justify-content:center;font-size:3em;position:relative}
+        .noticia-tag{position:absolute;top:15px;left:15px;background:var(--verde);color:#000;padding:6px 16px;border-radius:20px;font-size:0.8em;font-weight:700;text-transform:uppercase}
+        .noticia-content{padding:25px}
+        .noticia-meta{display:flex;gap:20px;color:var(--texto-sec);font-size:0.9em;margin-bottom:15px}
+        .noticia-titulo{font-size:1.3em;font-weight:700;margin-bottom:10px;line-height:1.4}
+        .noticia-resumo{color:var(--texto-sec);line-height:1.6}
+        .noticia-completa{color:var(--texto-sec);line-height:1.8;margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.1)}
+        .btn-todas{display:inline-flex;align-items:center;gap:10px;color:var(--verde);text-decoration:none;font-weight:600;margin-top:30px;padding:12px 24px;border:2px solid var(--verde);border-radius:30px}
+        .jogos{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+        .jogo{background:var(--card);border-radius:16px;padding:25px;border:1px solid rgba(255,255,255,0.1);position:relative}
+        .jogo-tag{position:absolute;top:0;left:0;background:var(--verde);color:#000;padding:8px 20px;border-radius:0 0 16px 0;font-size:0.8em;font-weight:700;text-transform:uppercase}
+        .jogo-times{display:flex;align-items:center;justify-content:space-between;margin:25px 0;flex-wrap:wrap;gap:15px}
+        .time{display:flex;align-items:center;gap:15px;font-weight:700;font-size:1.1em}
+        .escudo{width:50px;height:50px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000}
+        .escudo.adv{background:#333;color:#fff}
+        .vs{color:var(--verde);font-weight:900;font-size:1.3em}
+        .jogo-info{display:flex;justify-content:center;gap:30px;color:var(--texto-sec);font-size:0.9em;flex-wrap:wrap}
+        .escalacao{margin-top:20px;padding:20px;background:rgba(0,200,83,0.05);border-radius:12px;border:1px solid rgba(0,200,83,0.2)}
+        .escalacao h4{color:var(--verde);margin-bottom:10px;font-size:0.9em;text-transform:uppercase}
+        .escalacao p{color:var(--texto-sec);font-size:0.9em;line-height:1.6}
+        .videos{background:linear-gradient(180deg,rgba(0,0,0,0) 0%,rgba(0,100,55,0.1) 100%)}
+        .videos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px;max-width:1200px;margin:0 auto}
+        .video-card{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.1)}
+        .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000}
+        .video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+        .sobre{background:var(--card);margin:40px 20px;border-radius:24px;padding:40px;max-width:800px;margin-left:auto;margin-right:auto}
+        .sobre-header{display:flex;align-items:center;gap:15px;margin-bottom:30px}
+        .sobre-icon{width:60px;height:60px;background:rgba(0,200,83
